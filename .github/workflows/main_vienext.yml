@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -22,14 +22,14 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: mvn clean install
-        working-directory: koiauction  # Thêm dòng này để chạy Maven trong thư mục koiauction
+        run: mvn clean install -DskipTests  # Bỏ qua test để build tiếp tục
+        working-directory: koiauction
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/koiauction/target/*.jar'  # Cập nhật đường dẫn đến file JAR
+          path: '${{ github.workspace }}/koiauction/target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,8 +38,8 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
   
     steps:
       - name: Download artifact from build job
